@@ -1,18 +1,25 @@
 const path = require('path');//comes with node and does not need to be installed
+const http = require('http');
 const express = require('express');
+const socketIO = require('socket.io');
 
-var app = express();
 const publicPath = path.join(__dirname, '../public');
-
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
+var app = express();
+var server = http.createServer(app);
+var IO = socketIO(server);
 
 app.use(express.static(publicPath));
 
+IO.on('connection', (socket) => {
+    console.log('New user connected');
 
-// console.log(__dirname + '/../public');//Old way
-// console.log(publicPath);//New way
+    socket.on('disconnect', () => {
+        console.log('User was disconnected');
+    });
+});
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(`Server running on Port ${port} `);
 });
 
